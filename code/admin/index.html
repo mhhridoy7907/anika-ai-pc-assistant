@@ -1,1 +1,230 @@
-<!--->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ANIKA AI Admin</title>
+    <meta name="theme-color" content="#080b16">
+    <link rel="icon" href="https://i.pinimg.com/736x/49/54/b5/4954b5ed684762d352314d7e3cc5628c.jpg" type="image/x-icon">
+  
+    <link rel="stylesheet" herf="style.css">
+</head>
+
+<body>
+    <div id="loginView" class="login-wrap">
+        <form id="loginForm" class="login">
+            <div class="brand">ANIKA <span>AI</span></div>
+            <div class="muted small">ADMIN CONTROL CENTER</div>
+            <h1>Admin sign in</h1>
+            <p class="muted">Sign in with the authorized administrator account.</p>
+            <label>Email address</label><input id="email" type="email" autocomplete="username" required>
+            <label>Password</label><input id="password" type="password" autocomplete="current-password" required>
+            <button id="loginBtn">Secure Login</button>
+            <div id="loginError" class="error"></div>
+        </form>
+    </div>
+    <div id="appView" class="app hidden">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="brand">ANIKA <span>AI</span></div>
+                <div class="muted small">ADMIN CONTROL CENTER</div>
+            </div>
+            <nav class="nav">
+                <button class="active" data-page="dashboard">◈ Dashboard</button>
+                <button data-page="users">♙ Users</button>
+                <button data-page="licenses">⌁ Licenses</button>
+                <button data-page="devices">▣ Devices</button>
+                <button data-page="logs">◷ Activity Logs</button>
+            </nav>
+            <div class="side-bottom">
+                <div class="muted small" id="adminEmail"></div><button class="secondary" id="logoutBtn"
+                    style="width:100%;margin-top:12px">Sign out</button>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="top">
+                <div>
+                    <div class="muted small">ANIKA AI / ADMIN</div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="actions"><button class="secondary" id="refreshBtn">↻ Refresh</button><button
+                        class="secondary" id="mobileLogout">Sign out</button></div>
+            </header>
+            <section id="dashboardPage">
+                <div class="cards">
+                    <div class="stat">
+                        <div class="cap">REGISTERED USERS</div>
+                        <div class="num" id="sUsers">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">ACTIVE USERS</div>
+                        <div class="num" id="sActive">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">BLOCKED USERS</div>
+                        <div class="num" id="sBlocked">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">TOTAL LICENSES</div>
+                        <div class="num" id="sLicenses">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">ACTIVE LICENSES</div>
+                        <div class="num" id="sLicActive">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">EXPIRED LICENSES</div>
+                        <div class="num" id="sExpired">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">ONLINE DEVICES</div>
+                        <div class="num" id="sOnline">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="cap">TOTAL DEVICES</div>
+                        <div class="num" id="sDevices">—</div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>System overview</h2><span class="pill good">Firebase connected</span>
+                    </div>
+                    <p class="muted">Live counts are calculated from the Realtime Database. Device online status uses a
+                        2-minute heartbeat window.</p>
+                </div>
+            </section>
+            <section id="usersPage" class="hidden">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Registered users</h2>
+                        <div class="toolbar"><input id="userSearch" placeholder="Search name, email or UID…"></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>UID</th>
+                                    <th>Status</th>
+                                    <th>Registered</th>
+                                    <th>Last activity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section id="licensesPage" class="hidden">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Create license key</h2>
+                    </div>
+                    <div class="notice">License keys are stored in the Admin Realtime Database as SHA-256 hashes, not
+                        plaintext. Copy the key when it is generated; it cannot be displayed again.</div>
+                    <form id="licenseForm" class="form-grid">
+                        <div><label>Assign to user UID (optional)</label><input id="licenseUid"
+                                placeholder="Firebase Auth UID"></div>
+                        <div><label>Duration</label><select id="duration">
+                                <option value="7">7 days</option>
+                                <option value="30" selected>30 days</option>
+                                <option value="90">90 days</option>
+                                <option value="180">180 days</option>
+                                <option value="365">365 days</option>
+                                <option value="custom">Custom expiry</option>
+                            </select></div>
+                        <div id="customExpiryWrap" class="hidden"><label>Custom expiry date</label><input
+                                id="customExpiry" type="date"></div>
+                        <div><label>Device limit</label><input id="deviceLimit" type="number" min="1" max="20" value="1"
+                                required></div>
+                        <div class="full"><button id="createLicenseBtn">Generate license key</button></div>
+                    </form>
+                    <div id="newKeyBox" class="notice hidden" style="margin-top:14px"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>License records</h2>
+                        <div class="toolbar"><input id="licenseSearch" placeholder="Search UID or key hash…"></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>License ID</th>
+                                    <th>Assigned UID</th>
+                                    <th>Expires</th>
+                                    <th>Status</th>
+                                    <th>Devices</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="licensesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section id="devicesPage" class="hidden">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Registered devices</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Device ID</th>
+                                    <th>Owner UID</th>
+                                    <th>Last heartbeat</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section id="logsPage" class="hidden">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Administrative activity</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date / time</th>
+                                    <th>Action</th>
+                                    <th>Affected UID</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <div id="globalError" class="error"></div>
+        </main>
+    </div>
+    <div id="modalBg" class="modal-bg hidden">
+        <div class="modal">
+            <h3 id="modalTitle">Confirm action</h3>
+            <p id="modalText" class="muted"></p>
+            <div class="actions"><button class="secondary" id="modalCancel">Cancel</button><button class="danger"
+                    id="modalConfirm">Confirm</button></div>
+        </div>
+    </div>
+    <div id="toast" class="toast hidden"></div>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
+    
+  <!--main js-->
+  <script src="script.js"> </script>
+</body>
+
+</html>
